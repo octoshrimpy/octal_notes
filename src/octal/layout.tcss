@@ -1,16 +1,14 @@
 #app-grid {
   grid-size: 2 2;
   grid-rows: 1fr 1;
-  grid-columns: 5 1fr;
+  grid-columns: 7 1fr;
   # grid-gutter: 1;
   height: 1fr;
 }
 
 #sidebar {
-  # dock:left;
-  # width: 5;
   height: 100%;
-  background: $panel;
+  background: $panel-darken-1;
 }
 
 #bottom-bar {
@@ -19,22 +17,49 @@
 }
 
 #sidebar .button {
-  width: 1fr;
-  border: none;
-  padding: 1 0;
+  background: transparent;
+  max-width: 7;
+  border: round $panel-lighten-2;
+  height: auto;
+  padding: 0 1;
+  color: $text-muted;
+}
+
+#sidebar .button:hover {
+  border: round $secondary;
+  background: $panel;
+  color: $text;
+}
+
+#sidebar > .-selected {
+  border: round $secondary-darken-2;
+  color: $text;
+}
+
+#sidebar > .button:focus, {
+  text-style: none;
+  background: $panel;
+  border: round $panel-lighten-3;
+  color: $text;
+}
+
+#sidebar > .-selected:hover,
+#sidebar > .button.-selected:focus {
+  border: round $secondary;
+  color: $text;
 }
 
 
 
-#content > #left,
-#content > #metadata {
+#wrapper_notes > #left,
+#wrapper_notes > #metadata {
   min-width: 15;
   max-width: 20%;
 }
 
-#content > #left > *,
-#content > #metadata,
-#content > #center
+#wrapper_notes > #left > *,
+#wrapper_notes > #metadata,
+#wrapper_notes > #center
  {
   height: 1fr;
   border-title-align: left;
