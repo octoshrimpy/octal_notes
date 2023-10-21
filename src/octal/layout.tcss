@@ -68,10 +68,20 @@
   
 }
 
+#wrapper_notes #notes {
+  height: 2fr;
+}
 
+.drag_handle {
+  max-height: 1;
+  border: none !important;
+  border-bottom: wide $panel;
+  margin: 0 2;
+}
 
-
-
+.drag_handle:hover {
+  border-bottom: wide tomato !important;
+}
 
 
 
