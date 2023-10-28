@@ -72,19 +72,22 @@
   height: 2fr;
 }
 
-.drag_handle {
+DragHandle {
   max-height: 1;
   border: none !important;
   border-bottom: wide $panel;
   margin: 0 2;
+  background: transparent;
 }
 
-.drag_handle:hover {
+DragHandle:hover {
   border-bottom: wide tomato !important;
 }
 
 
-
+.spacer {
+  height: 1fr;
+}
 
 
 .button {

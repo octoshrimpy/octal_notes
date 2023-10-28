@@ -3,7 +3,7 @@ from rich.text import Text, TextType
 
 from textual.app import App, ComposeResult
 from textual.containers import Grid, Vertical, Horizontal, Container
-from textual.widgets import Header, Static, Placeholder, Button, TextArea, ContentSwitcher
+from textual.widgets import Header, Static, Placeholder, Button, TextArea, ContentSwitcher, Pretty, DirectoryTree
 from textual.binding import Binding
 from textual import events
 
@@ -18,24 +18,30 @@ class SidebarButton(Button):
         return self.label
 
 class DragHandle(Button):
+
     def __init__(
         self, 
         drag: str,
-        above: bool, 
-        below: bool,
+        above: str, 
+        below: str,
     ):
         super().__init__()
+        self.drag = drag
         self.above = above
         self.below = below
+        self.is_dragging = False
+        self.label = ""
         
     def render(self) -> RenderableType:
         return self.label
 
     def on_mouse_down(self, event: events.MouseDown) -> None:
-        self.is_dragging = true
+        event.stop()
+        self.is_dragging = True
 
     def on_mouse_up(self, event: events.MouseUp) -> None:
-        self.is_dragging = false
+        event.stop()
+        self.is_dragging = False
 
         
     # TODO: finish me pls
@@ -43,25 +49,37 @@ class DragHandle(Button):
         if not self.is_dragging:
             return
 
+        
+        write = app.query_one("TextArea") 
+        write.clear()
+        write.insert(str(event.delta_y))
+
+        self.parent.query_one("#notes").content = event
+
         above_elm = self.parent.query_one(self.above)
         below_elm = self.parent.query_one(self.below)
 
         if self.drag == "vertical":
-            drag_dir = events.MouseMove.delta_y
+            drag_dir = event.delta_y
+            above_height = above_elm.get_content_height()
+            below_height = below_elm.get_content_height()
+                        
         elif self.drag == "horizontal":
-            drag_dir = events.MouseMove.delta_x
+            drag_dir = event.delta_x
         else:
             # malformed, ignore for now
             return
-        
+
         if drag_dir > 0:
-            above_helm.height -= 1
+            above_elm.height -= 1
             below_elm.height += 1
         else:
-            above_helm.height += 1
+            above_elm.height += 1
             below_elm.height -= 1
-        
-        
+
+
+# class ThinScrollBar(ScrollBar):
+#     bar = ["▗", "▄", "▖", " "]
 
 class Card(Static):
 
@@ -189,9 +207,11 @@ class OctalApp(App):
             with Vertical(id="sidebar"):
                 yield SidebarButton("┌─┐\n╘─╛", classes="button", id="wrapper_inbox")
                 yield SidebarButton("┌██\n└─┘", classes="button", id="wrapper_notes")
-                yield SidebarButton("🞊  \n \\", classes="button", id="wrapper_search")
+                yield SidebarButton("🞊  \n ╲ ", classes="button", id="wrapper_search")
                 yield SidebarButton("● ๐\n┠─╯", classes="button", id="wrapper_git")
                 yield SidebarButton("□ ⌐\n√ ╍", classes="button", id="wrapper_todo")
+                yield Static(classes="spacer")
+                yield SidebarButton("⚙ ⌝\n⌞ ⚙", classes="button")
             with ContentSwitcher(initial="wrapper_inbox"):
                 with Horizontal(id="wrapper_inbox"):
                     with Vertical():
@@ -221,17 +241,17 @@ But how about the rounded corners?""",
                 with Horizontal(id="wrapper_notes"):
                     with Vertical(id="left"):
                     
-                        nb = Static("", id="notes")
+                        nb = DirectoryTree("./", id="notes")
+                        nb.guide_depth = 2
                         nb.border_title = "notes"
+                        
                         yield nb
 
-                        yield DragHandle(
-                            "", 
-                            drag="vertical", 
-                            above="#notes",
-                            below="#tags",
-                            classes="drag_handle"
-                        )
+                        # yield DragHandle(
+                        #     drag="vertical", 
+                        #     above="#notes",
+                        #     below="#tags"
+                        # )
                         
                         bb = Static("", id="tags")
                         bb.border_title = "tags"
